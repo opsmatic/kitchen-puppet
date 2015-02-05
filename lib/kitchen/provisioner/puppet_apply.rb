@@ -189,7 +189,11 @@ module Kitchen
             <<-INSTALL
               if [ ! $(which puppet) ]; then
                 if [ -f /etc/centos-release ] || [ -f /etc/redhat-release ] || [ -f /etc/oracle-release ]; then
-                  #{sudo('rpm')} -ivh #{proxy_parm} #{puppet_yum_repo}
+                  if grep -q "release 7" /etc/redhat-release; then
+                    #{sudo('rpm')} -ivh #{proxy_parm} https://yum.puppetlabs.com/puppetlabs-release-el-7.noarch.rpm
+                  else
+                    #{sudo('rpm')} -ivh #{proxy_parm} #{puppet_yum_repo}
+                  fi
                   #{update_packages_redhat_cmd}
                   #{sudo_env('yum')} -y install puppet#{puppet_redhat_version}
                 else
